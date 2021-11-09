@@ -1,0 +1,28 @@
+{
+  "name": "anotherstatemanager",
+  "version": "1.0.0",
+  "description": "Very flexible, performant, simple state management for managing a lot of rapid changes and various scenarios. Great for low overhead event management of game inputs and data streams.",
+  "main": "StateManager.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brainsatplay/StateManager.git"
+  },
+  "keywords": [
+    "state",
+    "manager",
+    "events",
+    "subscribe"
+  ],
+  "author": "Joshua Brewster and Garrett Flynn",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "objectlisteners": "^1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/brainsatplay/StateManager/issues"
+  },
+  "homepage": "https://github.com/brainsatplay/StateManager#readme"
+}
