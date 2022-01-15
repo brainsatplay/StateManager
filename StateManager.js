@@ -203,6 +203,17 @@ export class StateManager {
         } else return undefined;
     }
 
+    //will remove the trigger after firing once
+    subscribeTriggerOnce(key=undefined,onchange=(value)=>{}) {
+        let sub;
+        let changed = (value) => {
+            onchange(value);
+            this.unsubscribeTrigger(key,sub);
+        }
+
+        sub = this.subscribeTrigger(key,changed);
+    }
+
     //Delete specific trigger functions for a key
     unsubscribeTrigger(key=undefined,sub=0) {
         let idx = undefined;
@@ -249,6 +260,17 @@ export class StateManager {
             } 
             else return undefined;
         } else return undefined;
+    }
+    
+    //will remove the sequence after firing once (e.g. between frames)
+    subscribeSequentialOnce(key=undefined,onchange=(value)=>{}) {
+        let sub;
+        let changed = (value) => {
+            onchange(value);
+            this.unsubscribeSequential(key,sub);
+        }
+
+        sub = this.subscribeSequential(key,changed);
     }
 
     unsubscribeSequential(key=undefined,sub=0) {
@@ -331,6 +353,17 @@ export class StateManager {
 
         if(this.data[key] === undefined) {this.addToState(key,null,onchange,startRunning);}
         else {return this.addSecondaryKeyResponse(key,onchange);}
+    }
+ 
+    //will remove the subscription after firing once
+    subscribeOnce(key=undefined,onchange=(value)=>{}) {
+        let sub;
+        let changed = (value) => {
+            onchange(value);
+            this.unsubscribe(key,sub);
+        }
+
+        sub = this.subscribe(key,changed);
     }
     
     //Unsubscribe from the given key using the index of the response saved from the subscribe() function

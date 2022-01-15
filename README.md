@@ -16,19 +16,24 @@ let state = new StateManager();
 
 let sub = state.subscribe('x',(newx) => {console.log(newx);});
 
-state.setState({x:3});
 
 
-state.setState({...keys:values})
 
-state.subscribe(key,onchange)
-state.subscribeTrigger(key,onchange)
-state.subsribeSequential(key,onchange)
+state.subscribe(key,onchange);
+state.subscribeTrigger(key,onchange);
+state.subsribeSequential(key,onchange);
 
-state.unsubsribe(sub)
-state.unsubscribeTrigger(sub)
-state.unsubscribeSequential(sub)
+state.unsubsribe(sub);
+state.unsubscribeTrigger(sub);
+state.unsubscribeSequential(sub);
+
+state.subscribeOnce(key,onchange);
+state.subscribeTriggerOnce(key,onchange);
+state.subscribeSequentialOnce(key,onchange);
 //...
+
+state.setState({x:3});
+state.setState({...keys:values});
 
 ```
 
