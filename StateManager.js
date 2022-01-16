@@ -1,4 +1,4 @@
-import {ObjectListener} from 'objectlisteners'
+import ObjectListener from 'objectlisteners'
 
 //By Joshua Brewster (MIT License)
 //Simple state manager.
@@ -596,3 +596,4 @@ if(JSON.stringifyWithCircularRefs === undefined) {
     })();
 }
 
+export default StateManager
