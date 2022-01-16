@@ -52,6 +52,7 @@ export class StateManager {
         }    
     }
 
+    //Removes all references to a state key i.e. subscriptions and data
     removeState(key, sequential=false){
             if (sequential) this.unsubscribeAllSequential(key);
             else this.unsubscribeAll(key);
