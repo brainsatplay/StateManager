@@ -52,16 +52,6 @@ export class StateManager {
         }    
     }
 
-    //Removes all references to a state key i.e. subscriptions and data
-    removeState(key, sequential=false){
-            if (sequential) this.unsubscribeAllSequential(key);
-            else this.unsubscribeAll(key);
-            delete this.data[key]
-
-            // Log Update
-            this.setSequentialState({stateRemoved: key})
-    }
-
     setupSynchronousUpdates = () => {
         if(!this.listener.hasKey('pushToState')) {
             //we won't add this listener unless we use this function
@@ -373,10 +363,17 @@ export class StateManager {
         else console.error("Specify a subcription function index");
     }
 
-    unsubscribeAll(key) { // Removes the listener for the key (including the animation loop)
+    unsubscribeAll(key) { // Removes all listeners for a key (including the animation loop)
+        this.unsubscribeAllSequential(key);
+        this.unsubscribeAllTriggers(key);
         this.clearAllKeyResponses(key);
         if(this.data[key]) delete this.data[key];
+
+        
+        if(this.listener.hasKey('pushToState')) this.setSequentialState({stateRemoved: key})
     }
+   
+    removeState = this.unsubscribeAll;
 
     //runs only one animation frame to check all state keys
     runSynchronousListeners() {
