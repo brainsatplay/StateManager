@@ -35,6 +35,41 @@ export class StateManager {
         */
     }
 
+    //Save the return value to provide as the responseIdx in unsubscribe
+    subscribe(key, onchange, startRunning=this.defaultStartListenerEventLoop) {
+        // console.error('SUBSCRIBING')
+
+        if(this.data[key] === undefined) {this.addToState(key,null,onchange,startRunning);}
+        else {return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);}
+    }
+    
+    //will remove the subscription after firing once
+    subscribeOnce(key=undefined,onchange=(value)=>{}) {
+        let sub;
+        let changed = (value) => {
+            onchange(value);
+            this.unsubscribe(key,sub);
+        }
+
+        sub = this.subscribe(key,changed);
+    }
+    
+    //Unsubscribe from the given key using the index of the response saved from the subscribe() function
+    unsubscribe(key, responseIdx=null) {
+        if(responseIdx !== null) this.removeSecondaryKeyResponse(key, responseIdx, true);
+        else console.error("Specify a subcription function index");
+    }
+
+    unsubscribeAll(key) { // Removes all listeners for a key (including the animation loop)
+        this.unsubscribeAllSequential(key);
+        this.unsubscribeAllTriggers(key);
+        this.clearAllKeyResponses(key);
+        if(this.data[key]) delete this.data[key];
+
+        
+        if(this.listener.hasKey('pushToState')) this.setSequentialState({stateRemoved: key})
+    }
+
     setInterval(interval="FRAMERATE") {
         this.interval = interval;
         this.listener.listeners.forEach((obj,i) => {
@@ -336,41 +371,6 @@ export class StateManager {
     getKeySubCallbacks(key) {
         let callbacks = this.listener.getFuncs(key);
         return callbacks;
-    }
-
-    //Save the return value to provide as the responseIdx in unsubscribe
-    subscribe(key, onchange, startRunning=true) {
-        // console.error('SUBSCRIBING')
-
-        if(this.data[key] === undefined) {this.addToState(key,null,onchange,startRunning);}
-        else {return this.addSecondaryKeyResponse(key,onchange);}
-    }
- 
-    //will remove the subscription after firing once
-    subscribeOnce(key=undefined,onchange=(value)=>{}) {
-        let sub;
-        let changed = (value) => {
-            onchange(value);
-            this.unsubscribe(key,sub);
-        }
-
-        sub = this.subscribe(key,changed);
-    }
-    
-    //Unsubscribe from the given key using the index of the response saved from the subscribe() function
-    unsubscribe(key, responseIdx=null) {
-        if(responseIdx !== null) this.removeSecondaryKeyResponse(key, responseIdx, true);
-        else console.error("Specify a subcription function index");
-    }
-
-    unsubscribeAll(key) { // Removes all listeners for a key (including the animation loop)
-        this.unsubscribeAllSequential(key);
-        this.unsubscribeAllTriggers(key);
-        this.clearAllKeyResponses(key);
-        if(this.data[key]) delete this.data[key];
-
-        
-        if(this.listener.hasKey('pushToState')) this.setSequentialState({stateRemoved: key})
     }
    
     removeState = this.unsubscribeAll;

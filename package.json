@@ -1,6 +1,6 @@
 {
   "name": "anotherstatemanager",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Very flexible, performant, simple state management for managing a lot of rapid changes and various scenarios. Great for low overhead event management of game inputs and data streams.",
   "main": "StateManager.js",
   "type":"module",
