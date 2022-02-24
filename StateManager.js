@@ -12,6 +12,7 @@ export class StateManager {
         this.pushRecord={pushed:[]}; //all setStates between frames
         this.pushCallbacks = {};
         this.triggers = {};
+        this.prev = {};
 
         this.listener = new ObjectListener();
         this.defaultStartListenerEventLoop = defaultKeyEventLoop;
@@ -38,9 +39,10 @@ export class StateManager {
     //Save the return value to provide as the responseIdx in unsubscribe
     subscribe(key, onchange, startRunning=this.defaultStartListenerEventLoop) {
         // console.error('SUBSCRIBING')
-
-        if(this.data[key] === undefined) {this.addToState(key,null,onchange,startRunning);}
-        else {return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);}
+        if(key && key !== 'state') {
+            if(this.data[key] === undefined) { this.addToState(key,null,onchange,startRunning); }
+        } 
+        else {return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);} //if no key listen to whole state
     }
     
     //will remove the subscription after firing once
@@ -81,9 +83,9 @@ export class StateManager {
     // Managed State Updates. Must Still Clean Event Listeners
     updateState(key, value){
         if (this.data[key] == null){
-            this.addToState(key,value)
+            this.addToState(key,value);
         } else {
-            this.data[key] = value
+            this.data[key] = value;
         }    
     }
 
@@ -113,8 +115,9 @@ export class StateManager {
             this.addToState('pushRecord',this.pushRecord,(record)=>{
 
                 let l = record.pushed.length;
-                for (let i = 0; i < l; i++){
+                for (let i = 0; i < l; i++) {
                     let updateObj = record.pushed[i];
+                    if(this.pushCallbacks['state']) this.pushCallbacks['state'].onchange(updateObj); //whole state can be triggered
                     for(const prop in updateObj) {
                         if(this.pushCallbacks[prop]) {
                             this.pushCallbacks[prop].forEach((o) =>{
@@ -122,6 +125,7 @@ export class StateManager {
                             });
                         }
                     }
+                    
                 }
                 this.pushRecord.pushed.splice(0,l);
             });
@@ -201,6 +205,7 @@ export class StateManager {
         
         if(Object.keys(this.triggers).length > 0) {
             // Object.assign(this.data,this.pushToState);
+            if(this.triggers['state']) this.triggers['state'].onchange(this.data); //whole state can be triggered
             for (const prop of Object.getOwnPropertyNames(this.triggers)) {
                 if(this.pushToState[prop]) {
                     this.data[prop] = this.pushToState[prop]
@@ -274,7 +279,7 @@ export class StateManager {
 
         if(key) {
             
-            if(this.data[key] === undefined) {this.addToState(key,null,undefined);}
+            if(this.data[key] === undefined && key !== 'state') {this.addToState(key,null,undefined);}
 
             if(!this.pushCallbacks[key])
                 this.pushCallbacks[key] = [];
@@ -329,23 +334,58 @@ export class StateManager {
             if(this.listener.hasKey(key)){
                 this.listener.onchange(key, onchange);
             }
-            else if(key !== null){
+            else if(key != null  && key !== 'state'){
                 this.listener.addListener(key, this.data, key, onchange, this.data["stateUpdateInterval"], debug, startRunning);
+            }
+            else { 
+                if(!this.listener.hasKey('state')) { 
+
+                    const onStateChanged = () => {
+                        this.prev = Object.assign({},this.data);
+                        //this.prev=JSON.parse(JSON.stringifyFast(this.data));
+                    }
+
+                    this.listener.addListener(
+                        "state",
+                        this.data,
+                        "__ANY__",
+                        onStateChanged,
+                        interval,
+                    );
+                }
+                return this.listener.addFunc("state", onchange);
             }
         }
     }
 
     //Add extra onchange responses to the object listener for a set property. Use state key for state-wide change responses
-    addSecondaryKeyResponse(key=null, onchange=null, debug=false, startRunning=this.defaultStartListenerEventLoop) {
-        if(onchange !== null){
+    addSecondaryKeyResponse = (key=null, onchange=null, debug=false, startRunning=this.defaultStartListenerEventLoop) => {
+        if(onchange != null){
             if(this.listener.hasKey(key)){
                 return this.listener.addFunc(key, onchange);
             }
-            else if(key !== null){
+            else if(key != null && key !== 'state'){
                 this.listener.addListener(key, this.data,key,()=>{},this.data["stateUpdateInterval"], debug, startRunning);
                 return this.listener.addFunc(key, onchange);
             }
-            else { return this.listener.addFunc("state", onchange);}
+            else { 
+                if(!this.listener.hasKey('state')) { 
+
+                    const onStateChanged = () => {
+                        this.prev = Object.assign({},this.data);
+                        //this.prev=JSON.parse(JSON.stringifyFast(this.data));
+                    }
+
+                    this.listener.addListener(
+                        "state",
+                        this.data,
+                        "__ANY__",
+                        onStateChanged,
+                        interval,
+                    );
+                }
+                return this.listener.addFunc("state", onchange);
+            }
         }
     }
 
