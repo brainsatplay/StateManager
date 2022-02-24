@@ -350,7 +350,7 @@ export class StateManager {
                         this.data,
                         "__ANY__",
                         onStateChanged,
-                        interval,
+                        this.interval,
                     );
                 }
                 return this.listener.addFunc("state", onchange);
