@@ -1,5 +1,10 @@
 ## StateManager.js
 
+![status](https://img.shields.io/npm/v/anotherstatemanager) 
+![downloads](https://img.shields.io/npm/dt/anotherstatemanager)
+![size](https://img.shields.io/github/size/brainsatplay/StateManager/StateManager.js)
+![lic](https://img.shields.io/npm/l/anotherstatemanager)
+
 `npm i anotherstatemanager`
 
 Simple state manager.
