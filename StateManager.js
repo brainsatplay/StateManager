@@ -153,7 +153,7 @@ export class StateManager {
 
     //just get a value
     get(key) {
-        return this.state.data[key];
+        return this.data[key];
     }
 
     getState() { //Return a hard copy of the latest state with reduced values. Otherwise just use this.state.data
