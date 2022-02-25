@@ -235,7 +235,7 @@ export class StateManager {
 
         // console.error('SUBSCRIBING')
         if(key) {
-            if(!key in this.triggers) {
+            if(!this.triggers[key]) {
                 this.triggers[key] = [];
             }
             let l = this.triggers[key].length;
