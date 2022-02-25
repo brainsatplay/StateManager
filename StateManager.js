@@ -175,7 +175,7 @@ export class StateManager {
         
         if(appendArrs) {
             for(const prop in updateObj) { //3 object-deep array checks to buffer values instead of overwriting
-                if(this.pushToState[prop]) {
+                if(prop in this.pushToState) {
                     if(Array.isArray(this.pushToState[prop]) && Array.isArray(updateObj[prop])) {
                         updateObj[prop] = this.pushToState[prop].push(...updateObj[prop]);
                     } else if (typeof this.pushToState[prop] === 'object' && typeof updateObj[prop] === 'object') {
@@ -217,7 +217,7 @@ export class StateManager {
                 o.onchange(this.data)
             }); //whole state can be triggered
             for (const prop of Object.getOwnPropertyNames(this.triggers)) {
-                if(this.pushToState[prop]) {
+                if(prop in this.pushToState) {
                     this.data[prop] = this.pushToState[prop]
                     delete this.pushToState[prop];
                     this.triggers[prop].forEach((obj)=>{
@@ -235,7 +235,7 @@ export class StateManager {
 
         // console.error('SUBSCRIBING')
         if(key) {
-            if(!this.triggers[key]) {
+            if(!key in this.triggers) {
                 this.triggers[key] = [];
             }
             let l = this.triggers[key].length;
