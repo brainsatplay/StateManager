@@ -130,7 +130,7 @@ export class StateManager {
                 this.pushRecord.pushed.splice(0,l);
             });
 
-            this.data.pushCallbacks = this.pushCallbacks;
+            this.pushCallbacks;
 
         }
     }
