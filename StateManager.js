@@ -117,11 +117,16 @@ export class StateManager {
                 let l = record.pushed.length;
                 for (let i = 0; i < l; i++) {
                     let updateObj = record.pushed[i];
-                    if(this.pushCallbacks['state']) this.pushCallbacks['state'].onchange(updateObj); //whole state can be triggered
+                    if(this.pushCallbacks['state']) {
+                        this.pushCallbacks['state'].forEach((o) => {
+                            o.onchange(updateObj); //whole state can be triggered)
+                        })
+                    }
                     for(const prop in updateObj) {
                         if(this.pushCallbacks[prop]) {
                             this.pushCallbacks[prop].forEach((o) =>{
-                                o.onchange(updateObj[prop]);
+                                if(typeof o === 'object')
+                                   o.onchange(updateObj[prop]);
                             });
                         }
                     }
@@ -129,8 +134,6 @@ export class StateManager {
                 }
                 this.pushRecord.pushed.splice(0,l);
             });
-
-            this.pushCallbacks;
 
         }
     }
@@ -210,7 +213,9 @@ export class StateManager {
         
         if(Object.keys(this.triggers).length > 0) {
             // Object.assign(this.data,this.pushToState);
-            if(this.triggers['state']) this.triggers['state'].onchange(this.data); //whole state can be triggered
+            if(this.triggers['state']) this.triggers['state'].forEach((o)=>{
+                o.onchange(this.data)
+            }); //whole state can be triggered
             for (const prop of Object.getOwnPropertyNames(this.triggers)) {
                 if(this.pushToState[prop]) {
                     this.data[prop] = this.pushToState[prop]
@@ -454,21 +459,26 @@ if(JSON.stringifyFast === undefined) {
             if(parents[idx]){
                 var prev = parents[idx];
                 //console.log(value); 
-                if (prev[key] === value || idx === 0) {
-                    path.push(key);
-                    parents.push(value.pushed);
-                } else {
-                    while (idx-- >= 0) {
-                    prev = parents[idx];
-                    if (prev[key] === value) {
-                        idx += 2;
-                        parents.length = idx;
-                        path.length = idx;
-                        --idx;
-                        parents[idx] = value;
-                        path[idx] = key;
-                        break;
-                    }
+                if(typeof prev === 'object') {
+                    if (prev[key] === value || idx === 0) {
+                        path.push(key);
+                        parents.push(value.pushed);
+                    } else {
+                        while (idx-- >= 0) {
+                            prev = parents[idx];
+                            if(typeof prev === 'object') {
+                                if (prev[key] === value) {
+                                    idx += 2;
+                                    parents.length = idx;
+                                    path.length = idx;
+                                    --idx;
+                                    parents[idx] = value;
+                                    path[idx] = key;
+                                    break;
+                                }
+                            }
+                            idx++;
+                        }
                     }
                 }
             }
