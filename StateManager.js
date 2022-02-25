@@ -40,9 +40,15 @@ export class StateManager {
     subscribe(key, onchange, startRunning=this.defaultStartListenerEventLoop) {
         // console.error('SUBSCRIBING')
         if(key && key !== 'state') {
-            if(this.data[key] === undefined) { this.addToState(key,null,onchange,startRunning); }
-        } 
-        else {return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);} //if no key listen to whole state
+            if(this.data[key] === undefined) { 
+                this.addToState(key,null,onchange,startRunning); 
+            } else { 
+                return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);
+            } //if no key listen to whole state
+        } else { 
+            return this.addSecondaryKeyResponse(key,onchange,undefined,startRunning);
+        } //if no key listen to whole state
+        
     }
     
     //will remove the subscription after firing once
